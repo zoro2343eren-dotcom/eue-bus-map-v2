@@ -1,0 +1,156 @@
+<!doctype html>
+<!-- © Mohamed Wael Qenawi - Bus map for European Universities in Egypt 2026/2027. Map data © OpenStreetMap contributors / Esri. -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Mohamed Wael Qenawi">
+<meta name="copyright" content="© Mohamed Wael Qenawi">
+<title>باص الجامعات الأوروبية – خريطة السكن | Mohamed Wael Qenawi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1d2433;--mut:#667085;--line:#dfe3ea;--map:#eef2f6;--eue:#b3202a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--panel:#1a2029;--ink:#e8ecf2;--mut:#97a1b2;--line:#2b3340;--map:#151b24;--eue:#ff7a82;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161d;--panel:#1a2029;--ink:#e8ecf2;--mut:#97a1b2;--line:#2b3340;--map:#151b24;--eue:#ff7a82;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Cairo,"Segoe UI",Tahoma,Arial,sans-serif;font-size:14px}
+.app{height:100%;display:grid;grid-template-columns:390px 1fr;grid-template-rows:auto minmax(0,1fr)}
+header{grid-column:1/-1;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 14px}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:18px;margin:0}
+h1 small{display:block;font-size:12px;font-weight:400;color:var(--mut)}
+.seg button,.chip,.mb button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);cursor:pointer}
+.seg button{padding:5px 11px}.seg button:first-child{border-radius:0 8px 8px 0}.seg button:last-child{border-radius:8px 0 0 8px}
+.seg button.on,.chip.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+#chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:thin}
+.chip{border-radius:16px;padding:4px 11px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.chip.on i{outline:2px solid var(--panel)}
+#panel{background:var(--panel);border-inline-end:1px solid var(--line);overflow:auto;padding:12px 14px}
+.mapw{position:relative;background:var(--map);min-height:0}
+#m{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.mb{position:absolute;inset-inline-start:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.mb button{border-radius:8px;padding:6px 10px;min-width:38px}
+#card{position:absolute;inset-inline:10px;bottom:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:none;max-width:440px}
+#card b{font-size:15px}
+.t{display:flex;gap:8px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+.t:hover{background:var(--map)}
+.t .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;border:2px solid}
+.t .nm{flex:1;min-width:0}.t .nm small{display:block;color:var(--mut);font-size:11px}
+.t .tm{font-weight:600;min-width:48px;text-align:end;font-variant-numeric:tabular-nums}
+.th{font-size:11px;color:var(--mut);display:flex;gap:8px;padding:0 6px 4px}
+.th span:first-child{flex:1}.th span:not(:first-child){min-width:48px;text-align:end}
+.sum{color:var(--mut);margin:2px 0 10px;line-height:1.7}
+.note{color:#c2410c;font-size:12px;margin-top:8px}
+@media (max-width:800px){.app{grid-template-columns:1fr;grid-template-rows:auto 46% minmax(0,1fr)}.mapw{grid-row:2}#panel{grid-row:3;border:0}}
+
+#m{direction:ltr;cursor:auto;touch-action:auto}.leaflet-container{font-family:inherit;background:var(--map)}
+.leaflet-popup-content{direction:rtl;font-family:Cairo,sans-serif;margin:10px 12px;min-width:200px;line-height:1.6}
+.sr{display:flex;gap:6px;margin-bottom:6px}.sr input{flex:1;min-width:0;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.sr button{font:inherit;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
+.hint{color:var(--mut);font-size:12px;margin:0 0 10px;line-height:1.7}
+.box{background:var(--map);border-radius:10px;padding:8px 10px;margin:8px 0 12px}
+.box h3{font-size:13px;margin:0 0 4px}
+.app{grid-template-columns:390px minmax(0,1fr)}header,#panel,.mapw{min-width:0}
+@media (max-width:800px){.app{grid-template-columns:minmax(0,1fr)}}
+#warn{display:none;position:absolute;z-index:1000;inset-inline:12px;top:12px;background:#fff3bf;color:#5c3d00;border:1px solid #f0c36d;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7;direction:rtl}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="top">
+<h1>باص الجامعات الأوروبية 2026/2027 – خريطة السكن<small>الوصول للجامعة 08:15 | الانصراف 16:30</small></h1>
+<div class="seg" id="lang"><button data-l="ar">عربي</button><button data-l="both" class="on">عربي + EN</button><button data-l="en">EN</button></div>
+</div>
+<div id="chips"></div>
+</header>
+<div id="panel"></div>
+<div class="mapw" id="mw"><div id="m"></div><div id="warn"><b>الخريطة نفسها مش بتتحمّل هنا.</b><br>لو بتفتح الملف جوه معاينة Claude أو برنامج بيحجب الصور: نزّل الملف وافتحه بدبل كليك في Chrome أو Edge. وممكن كمان تجرّب طبقة تانية من الأيقونة اللي فوق على الشمال.</div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="data.js"></script>
+<script>
+const D=((window.BUS_DATA||{}).routes||[]).filter(r=>r.st&&r.st.length),UNI=[30.040585,31.7086544],DT=[30.0444,31.2357];
+const $=id=>document.getElementById(id),panel=$('panel'),chips=$('chips');
+const WM_NAME='Mohamed Wael Qenawi'; // اسم صاحب العمل: غيّره هنا فقط
+const WM_TEXT='Made by : '+WM_NAME;
+function wmSvg(){const t=esc(WM_TEXT);const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='900' height='560'><text x='450' y='280' text-anchor='middle' transform='rotate(-24 450 280)' font-family='Cairo,Arial,sans-serif' font-size='15' font-weight='700' fill='#000' fill-opacity='0.08'>${t}</text></svg>`;return 'url("data:image/svg+xml,'+encodeURIComponent(svg)+'")'}
+function mountWM(){const mw=document.getElementById('mw');if(!mw)return;
+ let a=document.getElementById('wm');if(!a){a=document.createElement('div');a.id='wm';mw.appendChild(a)}
+ a.style.cssText='position:absolute;inset:0;z-index:450;pointer-events:none;display:block;opacity:1;visibility:visible;background-image:'+wmSvg();
+ let b=document.getElementById('wmc');if(!b){b=document.createElement('div');b.id='wmc';mw.appendChild(b)}
+ b.textContent=WM_TEXT;
+ b.style.cssText='position:absolute;left:8px;bottom:8px;z-index:900;pointer-events:none;display:block;visibility:visible;opacity:1;background:rgba(255,255,255,.88);color:#1d2433;font:600 11px Cairo,Arial,sans-serif;padding:3px 8px;border-radius:6px;direction:ltr'}
+if(!D.length)document.body.insertAdjacentHTML('afterbegin','<div style="position:fixed;z-index:99999;inset-inline:0;top:0;background:#c92a2a;color:#fff;padding:12px 16px;font:600 14px Cairo,Arial,sans-serif;text-align:center;direction:rtl">مفيش بيانات خطوط محمّلة. تأكد إن ملف <b>data.js</b> (بالاسم ده بالظبط) موجود جنب index.html على GitHub.</div>');
+const hv=(a,b,c,d)=>{const p=Math.PI/180,x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin((d-b)*p/2)**2;return 12742*Math.asin(Math.sqrt(x))};
+const mn=t=>{if(!t)return null;const q=t.split(':');return +q[0]*60+ +q[1]};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let lg='both',sel=-1,pin=null,pinLine=null;
+const nm=s=>lg==='ar'?s.ar:lg==='en'?s.en:s.ar+' / '+s.en;
+const rn=r=>lg==='en'?r.code+' '+r.en:lg==='ar'?r.code+' '+r.ar:r.code+' '+r.ar+' / '+r.en;
+const map=L.map('m').setView([30.05,31.35],10);
+const bases={'خريطة شوارع (Esri)':L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri — Source: Esri, DeLorme, NAVTEQ, TomTom, OpenStreetMap contributors'}),
+'OpenStreetMap':L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}),
+'OpenStreetMap بأسماء عربي':L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',{subdomains:'abc',maxZoom:20,attribution:'© OpenStreetMap contributors, tiles by OSM France'}),
+'مترو ومواصلات (ÖPNV)':L.tileLayer('https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png',{maxZoom:18,attribution:'Map memomaps.de CC-BY-SA, data © OpenStreetMap contributors'}),
+'قمر صناعي (Esri)':L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri'})};
+let tOk=0,tBad=0;
+function chk(){$('warn').style.display=(tOk===0&&tBad>0)?'block':'none'}
+Object.values(bases).forEach(t=>{t.on('tileload',()=>{tOk++;chk()});t.on('tileerror',()=>{tBad++})});
+map.on('baselayerchange',()=>{tOk=0;tBad=0;chk();setTimeout(chk,4000)});
+setTimeout(chk,4000);setTimeout(chk,9000);
+bases['خريطة شوارع (Esri)'].addTo(map);L.control.layers(bases,null,{position:'topleft'}).addTo(map);
+const icon=(h,s)=>L.divIcon({html:h,className:'',iconSize:[s,s],iconAnchor:[s/2,s/2]});
+L.marker(UNI,{icon:icon('<div style="font-size:30px;line-height:30px;color:#b3202a;text-shadow:0 0 3px #fff">★</div>',30),zIndexOffset:900}).addTo(map).bindPopup('<b>الجامعات الأوروبية في مصر</b><br>EUE | العاصمة الإدارية<br>وصول 08:15 | انصراف 16:30');
+L.circleMarker(DT,{radius:6,color:'#1d2433',weight:2,fillColor:'#ffd43b',fillOpacity:1}).addTo(map).bindTooltip('وسط البلد (ميدان التحرير)',{direction:'top'});
+function pop(i,j){const r=D[i],s=r.st[j],a=mn(s.ta),e=mn(r.ea),ride=a!=null&&e?e-a:null;
+ return `<b>${esc(s.ar)}</b><br><span style="color:#667085">${esc(s.en)}</span><br><b style="color:${r.c}">${esc(rn(r))}</b><br>صباحاً <b>${s.ta||'—'}</b> | رجوعاً <b>${s.td||'—'}</b>${ride?`<br>الركوب للجامعة: <b>${ride} د</b>`:''}<br>عن وسط البلد: ${hv(s.la,s.ln,DT[0],DT[1]).toFixed(1)} كم${s.e?'<br><i>موقع تقديري</i>':''}${s.f?'<br><i>'+esc(s.f)+'</i>':''}`}
+D.forEach((r,i)=>{r.first=r.st[0].ta||r.st[0].td;
+ r.ll=L.polyline(r.line||r.st.map(s=>[s.la,s.ln]).concat([UNI]),{color:r.c,weight:4,opacity:r.line?.9:.55,dashArray:r.line?null:'6 6'});
+ r.mk=r.st.map((s,j)=>L.circleMarker([s.la,s.ln],{radius:7,color:r.c,weight:3,fillColor:s.m==='b'?r.c:'#fff',fillOpacity:1}).bindPopup(()=>pop(i,j)));
+ r.g=L.layerGroup([r.ll].concat(r.mk)).addTo(map)});
+function near(la,ln){return D.map((r,i)=>{let b=null;r.st.forEach((s,j)=>{const d=hv(la,ln,s.la,s.ln);if(!b||d<b.d)b={i,j,d}});return b}).sort((a,b)=>a.d-b.d)}
+function setPin(la,ln){if(!(la>29.4&&la<30.6&&ln>30.5&&ln<32.2))return alert('المكان ده برا القاهرة الكبرى، جرّب مكان تاني');if(pin)map.removeLayer(pin);if(pinLine)map.removeLayer(pinLine);
+ pin=L.marker([la,ln],{icon:icon('<div style="width:20px;height:20px;border-radius:50%;background:#e03131;border:3px solid #fff;box-shadow:0 0 0 2px #e03131"></div>',20),zIndexOffset:800}).addTo(map);
+ const n=near(la,ln)[0],s=D[n.i].st[n.j];pinLine=L.polyline([[la,ln],[s.la,s.ln]],{color:'#e03131',weight:2,dashArray:'5 5'}).addTo(map);drawPanel()}
+map.on('click',e=>setPin(e.latlng.lat,e.latlng.lng));
+function res(){if(!pin)return'';const p=pin.getLatLng(),dd=hv(p.lat,p.lng,DT[0],DT[1]).toFixed(1),du=hv(p.lat,p.lng,UNI[0],UNI[1]).toFixed(0);
+ return `<div class="box"><h3>📍 المكان اللي اخترته</h3><div class="hint" style="margin:0 0 6px">عن وسط البلد ${dd} كم | عن الجامعة ${du} كم (خط مستقيم)</div>`+near(p.lat,p.lng).slice(0,6).map(n=>{const r=D[n.i],s=r.st[n.j],a=mn(s.ta),e=mn(r.ea),m=Math.round(n.d*1000),w=Math.round(n.d*15.6);
+  return `<div class="t" data-i="${n.i}" data-j="${n.j}"><span class="n" style="border-color:${r.c};color:${r.c}">${r.code.slice(1)}</span><span class="nm">${esc(L_(r))}<small>${esc(s.ar)} | ${m<1000?m+' م':(m/1000).toFixed(1)+' كم'} (~${w} د مشي)</small></span><span class="tm">${s.ta||'—'}<small style="display:block;font-size:11px;color:var(--mut)">${a!=null&&e?(e-a)+' د ركوب':''}</small></span></div>`}).join('')+'</div>'}
+const L_=r=>lg==='en'?r.code+' '+r.en:r.code+' '+r.ar;
+function drawPanel(){
+ let h=`<div class="sr"><input id="q" placeholder="ابحث عن منطقة أو عنوان (مثلاً: الدقي)"><button id="go">بحث</button><button id="me">📍 موقعي</button></div><p class="hint">دوس على أي مكان في الخريطة وهوريك أقرب وقفة من كل خط، وميعاد التحميل ومدة الركوب للجامعة.</p><p class="hint" id="rs">${roadMsg}</p>`+res();
+ if(sel<0)h+=`<div class="th"><span>الخط</span><span>أول تحميل</span></div>`+D.map((r,i)=>`<div class="t" data-i="${i}"><span class="n" style="border-color:${r.c};color:${r.c}">${r.code.slice(1)}</span><span class="nm">${esc(lg==='en'?r.en:r.ar)}<small>${lg==='ar'?'':esc(r.en)} | ${r.st.length} وقفة | ركوب ~${mn(r.ea)-mn(r.first)} د</small></span><span class="tm">${r.first}</span></div>`).join('');
+ else{const r=D[sel];h+=`<div style="display:flex;gap:8px;align-items:center"><i style="width:12px;height:34px;border-radius:4px;background:${r.c}"></i><b style="font-size:16px">${esc(rn(r))}</b></div><div class="sum">${r.st.length} وقفة | أول تحميل ${r.first}<br>وصول الجامعة ${r.ea} | انصراف ${r.ed}</div><div class="th"><span>المحطة</span><span>صباحاً</span><span>رجوعاً</span></div>`+r.st.map((s,j)=>`<div class="t" data-i="${sel}" data-j="${j}"><span class="n" style="border-color:${r.c};${s.m==='b'?`background:${r.c};color:#fff`:`color:${r.c}`}">${j+1}</span><span class="nm">${esc(lg==='en'?s.en:s.ar)}${lg==='both'?`<small>${esc(s.en)}</small>`:''}</span><span class="tm">${s.ta||'—'}</span><span class="tm">${s.td||'—'}</span></div>`).join('')+`<div class="note">دايرة ممتلئة = وقفة ذهاب ورجوع، فاضية = اتجاه واحد فقط.</div>`+r.st.filter(s=>s.f||s.e).map(s=>`<div class="note">${esc(s.ar)}: ${s.e?'موقع تقديري':esc(s.f)}</div>`).join('')}
+ h+=`<div class="hint" style="margin-top:18px;border-top:1px solid var(--line);padding-top:10px"><div dir="ltr" style="text-align:left;font-weight:700;color:var(--ink);margin-bottom:4px">${esc(WM_TEXT)}</div>مواعيد الباص: الجامعات الأوروبية في مصر | بيانات الخرائط © OpenStreetMap contributors وEsri | مسارات: OSRM${(window.BUS_DATA||{}).updated?'<br>آخر تحديث: '+BUS_DATA.updated:''}</div>`;
+ const q=$('q'),v=q?q.value:'';panel.innerHTML=h;$('q').value=v;$('go').onclick=search;$('me').onclick=locate;$('q').onkeydown=e=>{if(e.key==='Enter')search()}}
+function search(){const q=$('q').value.trim();if(!q)return;fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=eg&viewbox=30.6,30.5,32.0,29.5&bounded=1&q='+encodeURIComponent(q)).then(r=>r.json()).then(a=>{if(!a[0])return alert('مفيش نتيجة، جرّب اسم تاني');const la=+a[0].lat,ln=+a[0].lon;map.setView([la,ln],15);setPin(la,ln)}).catch(()=>alert('البحث محتاج إنترنت'))}
+function locate(){if(!navigator.geolocation)return alert('المتصفح مش بيدعم تحديد الموقع');navigator.geolocation.getCurrentPosition(p=>{map.setView([p.coords.latitude,p.coords.longitude],14);setPin(p.coords.latitude,p.coords.longitude)},()=>alert('اسمح للمتصفح بالوصول لموقعك، أو دوس على الخريطة'))}
+function show(i){D.forEach((r,k)=>{if(i<0||i===k)r.g.addTo(map);else map.removeLayer(r.g)})}
+function pick(i){sel=i;[...chips.children].forEach((c,k)=>c.classList.toggle('on',k===i+1));show(i);drawPanel();fitTo(i<0?D.flatMap(r=>r.st.map(s=>[s.la,s.ln])).concat([UNI]):D[i].st.map(s=>[s.la,s.ln]).concat([UNI]))}
+function fitTo(pts){map.invalidateSize();map.fitBounds(L.latLngBounds(pts).pad(.12),{maxZoom:15})}
+function focusStop(i,j){if(sel>=0&&sel!==i)pick(i);const s=D[i].st[j];map.setView([s.la,s.ln],16);D[i].mk[j].openPopup()}
+panel.addEventListener('click',e=>{const t=e.target.closest('.t[data-i]');if(!t)return;const i=+t.dataset.i;if(t.dataset.j===undefined)pick(i);else focusStop(i,+t.dataset.j)});
+chips.innerHTML=`<button class="chip on" data-k="-1">كل الخطوط</button>`+D.map((r,i)=>`<button class="chip" data-k="${i}"><i style="background:${r.c}"></i>${r.code} ${esc(r.ar)}</button>`).join('');
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)pick(+b.dataset.k)});
+$('lang').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lg=b.dataset.l;[...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));drawPanel()});
+let roadMsg='';
+function road(i){const r=D[i],wpS=r.st.filter(s=>(s.ta||!s.td)&&!s.e).map(s=>s.ln+','+s.la).concat([UNI[1]+','+UNI[0]]).join(';'),key='osrm3:'+r.code+r.en+':'+wpS.split('').reduce((h,c)=>(h*31+c.charCodeAt(0))|0,7);let c=null;try{c=JSON.parse(localStorage.getItem(key))}catch(e){}
+ const apply=p=>{r.ll.setLatLngs(p);r.ll.setStyle({dashArray:null,opacity:.9})};
+ if(r.line){apply(r.line);return Promise.resolve(1)}
+ if(c){apply(c);return Promise.resolve(1)}
+ const wp=wpS;
+ return fetch('https://router.project-osrm.org/route/v1/driving/'+wp+'?overview=full&geometries=geojson').then(x=>x.json()).then(j=>{if(j.code!=='Ok')throw 0;const p=j.routes[0].geometry.coordinates.map(q=>[q[1],q[0]]);try{localStorage.setItem(key,JSON.stringify(p))}catch(e){}apply(p);return 1}).catch(()=>0)}
+function loadRoads(){let ok=0,n=0;D.reduce((p,_,i)=>p.then(()=>road(i)).then(v=>{ok+=v;n++;const t=document.getElementById('rs');roadMsg=n<D.length?`جاري تحميل مسارات الشوارع… ${n}/${D.length}`:(ok===D.length?'':`مسارات الشوارع: ${ok} من ${D.length} اتحمّلوا، والباقي خطوط متقطعة مستقيمة (محتاج إنترنت).`);if(t)t.textContent=roadMsg;return new Promise(z=>setTimeout(z,350))}),Promise.resolve())}
+drawPanel();loadRoads();mountWM();setInterval(mountWM,2500);
+if(window.MutationObserver)new MutationObserver(mountWM).observe(document.getElementById('mw'),{childList:true});
+if(window.ResizeObserver)new ResizeObserver(()=>map.invalidateSize()).observe($('m'));
+window.addEventListener('load',()=>{map.invalidateSize();pick(-1)});
+setTimeout(()=>{map.invalidateSize();pick(-1)},300);
+</script>
+</body>
+</html>
